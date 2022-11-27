@@ -22,7 +22,7 @@ function mount_workdir {
 function install_modules {
 	if lsmod | grep "ext2_inc" &> /dev/null ; then
 		echo "$MODULE_NAME is loaded! Unloading it"
-		rmmod $MODULE_NAME
+		rmmod -f $MODULE_NAME
 	fi
 
 	cd $SOURCE_DIR && \
