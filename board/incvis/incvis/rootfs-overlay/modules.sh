@@ -36,7 +36,7 @@ function mount_fs {
 	echo "Checking if ${FS_MNT_DIR} already mounted"
 	if grep -qs "${FS_MNT_DIR} " /proc/mounts; then
 		echo "Unmounting ${FS_MNT_DIR}"
-		umount $FS_MNT_DIR
+		umount -l $FS_MNT_DIR
 	fi
 
 	echo "Allocating fs file with size ${FS_FILE_SIZE}"
