@@ -3,7 +3,7 @@ set -euo pipefail # fail on error
 set -x # logging
 IFS=$'\n\t'
 
-MODULE_NAME=ext2-inc
+MODULE_NAME=ext2
 WORKDIR=/mnt/work
 SOURCE_DIR="${WORKDIR}/workflow/linux"
 FS_MNT_DIR=/mnt/ext2
