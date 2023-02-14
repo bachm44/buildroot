@@ -1,6 +1,6 @@
-From 7888f8f24ec08cdfd51929cde4e177396d7504e7 Mon Sep 17 00:00:00 2001
-From: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-Date: Thu, 28 Dec 2017 20:22:00 +0100
+From c05225f3cc93ea34ee91baf56a55d78a67d118ae Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bart=C5=82omiej=20Chmiel?= <bachm44@gmail.com>
+Date: Tue, 14 Feb 2023 20:17:41 +0100
 Subject: [PATCH] nilfs_cleanerd: link dynamically
 
 When nilfs_cleanerd does not run due to shared object problems,
@@ -8,25 +8,52 @@ nilfs2 filesystems may run out of space soon.
 This logic that justified linking nilfs_cleanerd statically
 does IMO not apply to embedded systems built by buildroot.
 This commit therefore drops the static linking.
-
-Signed-off-by: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
 ---
- sbin/cleanerd/Makefile.am | 2 --
+ sbin/Makefile.am | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/sbin/cleanerd/Makefile.am b/sbin/cleanerd/Makefile.am
-index 3a5335d..06f0847 100644
---- a/sbin/cleanerd/Makefile.am
-+++ b/sbin/cleanerd/Makefile.am
-@@ -9,8 +9,6 @@ nilfs_cleanerd_SOURCES = cleanerd.c cldconfig.c \
- nilfs_cleanerd_CFLAGS = -Wall
- nilfs_cleanerd_CPPFLAGS = -I$(top_srcdir)/include \
- 	-DSYSCONFDIR=\"$(sysconfdir)\"
+diff --git a/sbin/Makefile.am b/sbin/Makefile.am
+index 7729166..84639a6 100644
+--- a/sbin/Makefile.am
++++ b/sbin/Makefile.am
+@@ -1,37 +1,35 @@
+ ## Makefile.am
+ 
+ SUBDIRS = mount
+ 
+ AM_CFLAGS = -Wall
+ AM_CPPFLAGS = -I$(top_srcdir)/include
+ LDADD = $(top_builddir)/lib/libnilfs.la
+ 
+ root_sbin_PROGRAMS = mkfs.nilfs2 nilfs_cleanerd
+ sbin_PROGRAMS = nilfs-clean nilfs-resize nilfs-tune
+ 
+ mkfs_nilfs2_SOURCES = mkfs.c bitops.c mkfs.h
+ mkfs_nilfs2_LDADD = $(LIB_BLKID) -luuid \
+ 	$(top_builddir)/lib/libcrc32.la \
+ 	$(top_builddir)/lib/libmountchk.la \
+ 	$(top_builddir)/lib/libnilfsfeature.la
+ 
+ nilfs_cleanerd_SOURCES = cleanerd.c cldconfig.c cldconfig.h
+ nilfs_cleanerd_CPPFLAGS = $(AM_CPPFLAGS) -DSYSCONFDIR=\"$(sysconfdir)\"
 -# Use -static option to make nilfs_cleanerd self-contained.
 -nilfs_cleanerd_LDFLAGS = -static
+ nilfs_cleanerd_LDADD = $(LDADD) $(LIB_POSIX_MQ) -luuid \
+ 	$(top_builddir)/lib/libnilfsgc.la
  
- dist_sysconf_DATA = nilfs_cleanerd.conf
+ nilfs_clean_SOURCES = nilfs-clean.c
+ nilfs_clean_LDADD =  $(LDADD) $(top_builddir)/lib/libcleaner.la \
+ 	$(top_builddir)/lib/libparser.la
  
+ nilfs_resize_SOURCES = nilfs-resize.c
+ nilfs_resize_LDADD = $(LDADD) $(top_builddir)/lib/libmountchk.la \
+ 	$(top_builddir)/lib/libnilfsgc.la
+ 
+ nilfs_tune_SOURCES = nilfs-tune.c
+ nilfs_tune_LDADD = $(LDADD) $(top_builddir)/lib/libmountchk.la \
+ 	$(top_builddir)/lib/libnilfsfeature.la
+ 
+ EXTRA_DIST = .gitignore
 -- 
-1.8.5.rc3
+2.39.1
 
