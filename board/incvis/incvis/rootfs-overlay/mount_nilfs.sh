@@ -13,5 +13,6 @@ rm -f $FS_BIN_FILE
 fallocate -l $FS_FILE_SIZE $FS_BIN_FILE
 losetup -P $LOOP_INTERFACE $FS_BIN_FILE
 mkfs.nilfs2 $LOOP_INTERFACE -B 16
+nilfs-tune -i 1 /dev/loop0
 mkdir -p $FS_MNT_DIR
 mount -t nilfs2 $LOOP_INTERFACE $FS_MNT_DIR
