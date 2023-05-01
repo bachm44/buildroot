@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NILFS_UTILS_VERSION = 2.3.0-dev-5ad55db5317e95c4146f28065d58de04540e6ea8
+NILFS_UTILS_VERSION = 2.3.0-dev-1c473755dcb9b4b54d16dc3ba9dca3beec975808
 NILFS_UTILS_SOURCE = nilfs-utils-$(NILFS_UTILS_VERSION).tar.bz2
 NILFS_UTILS_SITE = https://github.com/bachm44/nilfs-utils/releases/download/$(NILFS_UTILS_VERSION)
 NILFS_UTILS_LICENSE = GPL-2.0+ (programs), LGPL-2.1+ (libraries)
