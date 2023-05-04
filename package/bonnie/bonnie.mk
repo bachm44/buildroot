@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-BONNIE_VERSION = 1.03e
-BONNIE_SOURCE = bonnie++-$(BONNIE_VERSION).tgz
-BONNIE_SITE = http://www.coker.com.au/bonnie++
+BONNIE_VERSION = 2.00e
+BONNIE_SOURCE = $(BONNIE_VERSION).tar.gz
+BONNIE_SITE = https://github.com/bachm44/bonnie-plus-plus/archive/refs/tags
 BONNIE_LICENSE = GPL-2.0
 BONNIE_LICENSE_FILES = copyright.txt
 

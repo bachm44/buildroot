@@ -1,0 +1,120 @@
+From 8735af069df028b82a1dbc01f2cd1fb041252ea6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Bart=C5=82omiej=20Chmiel?= <bachm44@gmail.com>
+Date: Thu, 4 May 2023 17:07:43 +0200
+Subject: [PATCH] Hardcode random distribution selection due to illegal
+ instruction bug in threads
+
+---
+ FIO-VERSION-GEN |  2 +-
+ options.c       | 59 +------------------------------------------------
+ parse.c         |  4 ++--
+ 3 files changed, 4 insertions(+), 61 deletions(-)
+
+diff --git a/FIO-VERSION-GEN b/FIO-VERSION-GEN
+index f1585d34..8a634980 100755
+--- a/FIO-VERSION-GEN
++++ b/FIO-VERSION-GEN
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ 
+ GVF=FIO-VERSION-FILE
+-DEF_VER=fio-3.34
++DEF_VER=fio-3.34-fix1
+ 
+ LF='
+ '
+diff --git a/options.c b/options.c
+index 91049af5..efad8844 100644
+--- a/options.c
++++ b/options.c
+@@ -1198,64 +1198,7 @@ static int parse_zoned_distribution(struct thread_data *td, const char *input,
+ 
+ static int str_random_distribution_cb(void *data, const char *str)
+ {
+-	struct thread_data *td = cb_data_to_td(data);
+-	double val;
+-	double center = -1;
+-	char *nr;
+-
+-	if (td->o.random_distribution == FIO_RAND_DIST_ZIPF)
+-		val = FIO_DEF_ZIPF;
+-	else if (td->o.random_distribution == FIO_RAND_DIST_PARETO)
+-		val = FIO_DEF_PARETO;
+-	else if (td->o.random_distribution == FIO_RAND_DIST_GAUSS)
+-		val = 0.0;
+-	else if (td->o.random_distribution == FIO_RAND_DIST_ZONED)
+-		return parse_zoned_distribution(td, str, false);
+-	else if (td->o.random_distribution == FIO_RAND_DIST_ZONED_ABS)
+-		return parse_zoned_distribution(td, str, true);
+-	else
+-		return 0;
+-
+-	nr = get_opt_postfix(str);
+-	if (nr && !split_parse_distr(nr, &val, &center)) {
+-		log_err("fio: random postfix parsing failed\n");
+-		free(nr);
+-		return 1;
+-	}
+-
+-	free(nr);
+-
+-	if (center != -1 && (center < 0.00 || center > 1.00)) {
+-		log_err("fio: distribution center out of range (0 <= center <= 1.0)\n");
+-		return 1;
+-	}
+-	td->o.random_center.u.f = center;
+-
+-	if (td->o.random_distribution == FIO_RAND_DIST_ZIPF) {
+-		if (val == 1.00) {
+-			log_err("fio: zipf theta must different than 1.0\n");
+-			return 1;
+-		}
+-		if (parse_dryrun())
+-			return 0;
+-		td->o.zipf_theta.u.f = val;
+-	} else if (td->o.random_distribution == FIO_RAND_DIST_PARETO) {
+-		if (val <= 0.00 || val >= 1.00) {
+-			log_err("fio: pareto input out of range (0 < input < 1.0)\n");
+-			return 1;
+-		}
+-		if (parse_dryrun())
+-			return 0;
+-		td->o.pareto_h.u.f = val;
+-	} else {
+-		if (val < 0.00 || val >= 100.0) {
+-			log_err("fio: normal deviation out of range (0 <= input < 100.0)\n");
+-			return 1;
+-		}
+-		if (parse_dryrun())
+-			return 0;
+-		td->o.gauss_dev.u.f = val;
+-	}
++	// FIXME hardcoded FIO_RAND_DIST_RANDOM due to illegal instruction in threads
+ 
+ 	return 0;
+ }
+diff --git a/parse.c b/parse.c
+index 656a5025..6112d7be 100644
+--- a/parse.c
++++ b/parse.c
+@@ -595,7 +595,7 @@ static int __handle_option(const struct fio_option *o, const char *ptr,
+ 
+ 		if (ret && !all_skipped)
+ 			show_option_values(o);
+-		else if (fn)
++		else if (fn && data)
+ 			ret = fn(data, ptr);
+ 		break;
+ 	}
+@@ -687,7 +687,7 @@ static int __handle_option(const struct fio_option *o, const char *ptr,
+ 		}
+ 
+ store_option_value:
+-		if (fn)
++		if (fn && data)
+ 			ret = fn(data, &ull);
+ 		else {
+ 			if (o->type == FIO_OPT_INT) {
+-- 
+2.40.1
+
