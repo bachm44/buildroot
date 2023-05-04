@@ -5,7 +5,7 @@ set -x # logging
 IFS=$'\n\t'
 
 FS_MNT_DIR=/mnt/nilfs2
-FS_FILE_SIZE=500M
+FS_FILE_SIZE=18G
 FS_BIN_FILE=/nilfs2.bin
 LOOP_INTERFACE=/dev/loop0
 
