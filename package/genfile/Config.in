@@ -1,7 +1,7 @@
-config BR2_PACKAGE_GEN_FILE
-	bool "gen_file"
+config BR2_PACKAGE_GENFILE
+	bool "genfile"
 	select BR2_PACKAGE_ARGP_STANDALONE
 	help
 	  Used for p_mag reproduction deduplication benchmarking
 
-	  https://github.com/bachm44/gen_file/
+	  https://github.com/bachm44/genfile/
